@@ -1,0 +1,60 @@
+.main-button{
+    position: absolute;
+    border-radius: 20px;
+    top: 2px;
+    background-color: #f5f8fa;
+    left: 180px;
+    width: 30px;
+    height: 20px;
+    margin: 0 auto;
+    border: none;
+}
+.main-button,
+.main-button:active,
+.main-button:focus {
+    outline: none;
+}
+body{
+    background: #00adee url(../images/twitter.png) 50% 50% no-repeat fixed;
+}
+#search-block{
+    position: fixed;
+    top: 43%;
+    left: 43%;
+}
+#main-search{
+    position: absolute;
+    height: 24px;
+    width: 215px;
+    border-radius: 20px;
+    -webkit-border-radius: 20px;
+    background: #f5f8fa  !important;
+    border: 1px solid #00adee;
+}
+#main-search,
+#main-search:active,
+#main-search:focus {
+    outline: none;
+}
+#main-search:active,
+#main-search:focus {
+    border: 2px solid #4ab3f4;
+    background: #ffffff;
+}
+#\+{
+    font-family: Arial, sans-serif;
+    color: #1da1f2;
+    font-size: 18px;
+}
+#list-block{
+    position: absolute;
+    width: 40vh;
+    height: 70vh;
+    background: #ffffff;
+    border-radius: 15px;
+    right: 1%;
+    bottom: 1%;
+}
+li{
+    list-style-type: none;
+}
