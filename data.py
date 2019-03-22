@@ -52,6 +52,3 @@ def database_insert(table_name, user_names):
     except:
         pass
     my_db.commit()
-
-
-database_insert("test", ["DLGreez"])
