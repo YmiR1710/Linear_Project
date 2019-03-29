@@ -54,4 +54,3 @@ def database_insert(table_name, users):
     except:
         pass
     my_db.commit()
-    
