@@ -54,6 +54,4 @@ def database_insert(table_name, users):
     except:
         pass
     my_db.commit()
-
-
-database_insert("table_3", get_info(["MaelstormOne", "KoTHunt"]))
+    
