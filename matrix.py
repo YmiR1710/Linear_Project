@@ -89,7 +89,4 @@ class Matrix:
     def gauss_solve(self, A, b):
         m2 = [row[:] + [right] for row, right in zip(A, b)]
         return [row[-1] for row in m2] if self.gauss_jordan(m2) else None
-
-
-q = Matrix()
-print(q.inverse_solve([[2, 3, 5], [4, 6, 8], [1, 2, 3]], [34, 10, 1]))
+    
