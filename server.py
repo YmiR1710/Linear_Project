@@ -1,16 +1,44 @@
-from gevent import monkey
-from matrix import Matrix
-from flask import Flask
-from flask import render_template
 from gevent.pywsgi import WSGIServer
+from data import get_info, database_insert, update, update_all
+from analysis import analyze_all
+from flask import Flask, render_template, request
+import datetime
 
-monkey.patch_all()
+update_date = []
 app = Flask(__name__)
+new_table = [0, []]
 
 
-@app.route("/")
-def hello():
-    return render_template("index.html")
+@app.route("/", methods=['GET', 'POST'])
+def main_func():
+    try:
+        if datetime.datetime.now().day != update_date[-1]:
+            update_date.append(datetime.datetime.now().day)
+            update_all()
+    except IndexError:
+        update_date.append(datetime.datetime.now().day)
+        update_all()
+    finish = False
+    name = request.form.get("table", False)
+    if name not in new_table and name:
+        new_table[0] = name
+    user = request.form.get("user", False)
+    if user not in new_table and user:
+        new_table[1].append(user)
+    if not user:
+        finish = True
+    if not new_table[0] or len(new_table[1]) < 1:
+        finish = False
+    if finish:
+        database_insert(new_table[0], get_info(new_table[1], len(new_table[1])))
+        for u in reversed(range(len(new_table[1]) - 1)):
+            update(new_table[0], u)
+        new_table.pop(0)
+        new_table.pop(0)
+        new_table.append(0)
+        new_table.append([])
+    data_dict = analyze_all()
+    return render_template("index.html", data=data_dict)
 
 
 if __name__ == "__main__":
