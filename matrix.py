@@ -5,6 +5,10 @@ class Matrix:
         return map(list, zip(*m))
 
     @staticmethod
+    def transpose_matrix1(m):
+        return [list(i) for i in zip(*m)]
+
+    @staticmethod
     def get_matrix_minor(m, i, j):
         return [row[:j] + row[j + 1:] for row in (m[:i] + m[i + 1:])]
 
@@ -40,13 +44,30 @@ class Matrix:
 
     @staticmethod
     def matrix_multiplication(a, b):
-        res = []
-        for i in range(len(a[0])):
-            sum = 0
-            for j in range(len(a[i])):
-                sum += a[i][j] * b[j][0]
-            res.append(sum)
-        return res
+        result = []
+        result1 = []
+        while len(a) > 0:
+            d = 0
+            a1 = a[:1:]
+            c = True
+            while d < len(a1):
+                for x in b:
+                    for x1 in x:
+                        result.append(x1 * a1[0][d])
+                    d = d + 1
+            a.pop(0)
+        result = [result[i:i + len(b[0])] for i in range(0, len(result), len(b[0]))]
+        sum = 0
+        while len(result) > 0:
+            for X in range(len(result[0])):
+                for Y in range(len(b)):
+                    sum = sum + result[Y][X]
+                result1.append(sum)
+                sum = 0
+            for s in range(len(b)):
+                result.pop(0)
+        result1 = [result1[i:i + len(b[0])] for i in range(0, len(result1), len(b[0]))]
+        return (result1)
 
     @staticmethod
     def vector_matrix_multiplication(A, b):
@@ -89,4 +110,12 @@ class Matrix:
     def gauss_solve(self, A, b):
         m2 = [row[:] + [right] for row, right in zip(A, b)]
         return [row[-1] for row in m2] if self.gauss_jordan(m2) else None
-    
+
+    def get_pseudo_inverse(self, A):
+        return self.matrix_multiplication(self.transpose_matrix1(A), self.get_matrix_inverse(self.matrix_multiplication(A, self.transpose_matrix1(A))))
+
+    def pseudo_inverse_solve(self, A, b):
+        try:
+            return self.vector_matrix_multiplication(self.get_pseudo_inverse(A), b)
+        except ZeroDivisionError:
+            return None
