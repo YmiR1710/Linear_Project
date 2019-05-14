@@ -1,9 +1,11 @@
 from twitter_analysis import get_tweets
 import datetime
 import mysql.connector
+import random
 
 
-def get_info(user_names):
+
+def get_info(user_names, day):
     now = datetime.datetime.today()
     users = []
     for u in user_names:
@@ -11,7 +13,7 @@ def get_info(user_names):
     for user in users:
         try:
             for tweet in get_tweets(user[0], tweets=450):
-                if tweet.get('time').split()[0] == str(now - datetime.timedelta(1)).split()[0]:
+                if tweet.get('time').split()[0] == str(now - datetime.timedelta(day)).split()[0]:
                     user[2] += 1
                     user[1] += tweet.get('likes')
         except:
@@ -20,16 +22,16 @@ def get_info(user_names):
         if user[2] != 0:
             user[1] = user[1]/user[2]
         else:
-            user[1] = 0
+            user[1] = float("0.1{}".format(str(random.randrange(0, 1000))))
     return users
 
 
 def database_insert(table_name, users):
     my_db = mysql.connector.connect(
-        host="localhost",
-        user="root",
+        host="yaroslavboiko.mysql.pythonanywhere-services.com",
+        user="yaroslavboiko",
         passwd="wital1999",
-        database="twitter"
+        database="yaroslavboiko$twitter"
     )
     my_cursor = my_db.cursor()
     command = "CREATE TABLE IF NOT EXISTS {} ( `id` int NOT NULL AUTO_INCREMENT".format(table_name)
@@ -54,3 +56,44 @@ def database_insert(table_name, users):
     except:
         pass
     my_db.commit()
+    my_db.close()
+
+
+def update(table_name, day):
+    my_db = mysql.connector.connect(
+        host="yaroslavboiko.mysql.pythonanywhere-services.com",
+        user="yaroslavboiko",
+        passwd="wital1999",
+        database="yaroslavboiko$twitter"
+    )
+    users = []
+    my_cursor = my_db.cursor()
+    my_cursor.execute("SELECT * FROM " + table_name + " ORDER BY id DESC LIMIT 1;")
+    my_result = my_cursor.fetchall()
+    for i in my_result[0]:
+        if type(i) is str:
+            users.append(i)
+    database_insert(table_name, get_info(users, day))
+    my_db.commit()
+    my_db.close()
+
+
+def update_all():
+    my_db = mysql.connector.connect(
+        host="yaroslavboiko.mysql.pythonanywhere-services.com",
+        user="yaroslavboiko",
+        passwd="wital1999",
+        database="yaroslavboiko$twitter"
+    )
+    my_cursor = my_db.cursor()
+    my_cursor.execute("SHOW TABLES;")
+    my_result = my_cursor.fetchall()
+    for i in my_result:
+        update(i[0], 1)
+        cols = int((len(i[0]) - 1)/2)
+        rows = len(i)
+        if cols < rows:
+            my_cursor.execute("DELETE FROM " + i[0] + " LIMIT " + str(rows - cols + 1))
+            my_db.commit()
+        my_db.commit()
+    my_db.close()
